@@ -179,6 +179,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Goobuntu-icon.png" />
+    <Content Include="ie_retro.gif" />
     <Content Include="Intranet-icon.png" />
     <BundleResource Include="local.html" />
     <Content Include="oasis.jpg" />
@@ -333,6 +334,8 @@
     <BundleResource Include="Resources\icon_bookmark%402x.png" />
     <BundleResource Include="Resources\xamarinstore.jpg" />
     <BundleResource Include="Resources\cardBackground%402x.png" />
+    <Content Include="Default-812h%403x.png" />
+    <Content Include="sweden.gif" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
