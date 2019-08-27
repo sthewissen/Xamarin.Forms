@@ -16,8 +16,18 @@ using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific.AppCompat;
 using AToolbar = Android.Support.V7.Widget.Toolbar;
 using AColor = Android.Graphics.Color;
+using AView = Android.Views.View;
 using ARelativeLayout = Android.Widget.RelativeLayout;
 using Xamarin.Forms.Internals;
+using System.Runtime.CompilerServices;
+
+using FLabelRenderer = Xamarin.Forms.Platform.Android.FastRenderers.LabelRenderer;
+using FButtonRenderer = Xamarin.Forms.Platform.Android.FastRenderers.ButtonRenderer;
+using FImageRenderer = Xamarin.Forms.Platform.Android.FastRenderers.ImageRenderer;
+using FFrameRenderer = Xamarin.Forms.Platform.Android.FastRenderers.FrameRenderer;
+using Android.Graphics.Drawables;
+using Android.Graphics;
+using AFragment = Android.Support.V4.App.Fragment;
 
 #endregion
 
@@ -40,11 +50,16 @@ namespace Xamarin.Forms.Platform.Android
 		public ActivationFlags Flags;
 	}
 
-	public class FormsAppCompatActivity : AppCompatActivity, IDeviceInfoProvider
+	public class FormsAppCompatActivity : AppCompatActivity, IDeviceInfoProvider, 
+		IResourceInflator
 	{
 		public delegate bool BackButtonPressedEventHandler(object sender, EventArgs e);
 
 		Application _application;
+
+		readonly Anticipator _anticipator;
+		object _accentColor;
+		DeviceInfo _deviceInfo;
 
 		AndroidApplicationLifecycleState _currentState;
 		ARelativeLayout _layout;
@@ -68,9 +83,49 @@ namespace Xamarin.Forms.Platform.Android
 			_currentState = AndroidApplicationLifecycleState.Uninitialized;
 			PopupManager.Subscribe(this);
 
-			var anticipator = new Anticipator();
-			anticipator.AnticipateClassConstruction(typeof(Resource.Layout));
-			anticipator.AnticipateClassConstruction(typeof(Resource.Attribute));
+			_anticipator = new Anticipator();
+			_anticipator.AnticipateGetter(() => Forms.SdkInt);
+			_anticipator.AnticipateClassConstruction(typeof(Resource.Layout));
+			_anticipator.AnticipateClassConstruction(typeof(Resource.Attribute));
+			_anticipator.Anticipate(() => _accentColor = Forms.GetAccentColor(this));
+			_anticipator.Anticipate(() => _deviceInfo = new Forms.AndroidDeviceInfo(this));
+			_anticipator.Anticipate(() => {
+				new PageRenderer(this);
+				new FLabelRenderer(this);
+				new FButtonRenderer(this);
+				new FImageRenderer(this);
+				new FFrameRenderer(this);
+				new ListViewRenderer(this);
+				new AFragment();
+				new DummyDrawable();
+			});
+		}
+		class DummyDrawable : Drawable
+		{
+			public override int Opacity => 0;
+			public override void Draw(Canvas canvas) { }
+			public override void SetAlpha(int alpha) { }
+			public override void SetColorFilter(ColorFilter colorFilter) { }
+		}
+
+		internal DeviceInfo DeviceInfo
+		{
+			get
+			{
+				if (_deviceInfo == null)
+					Interlocked.CompareExchange(ref _deviceInfo, new Forms.AndroidDeviceInfo(this), null);
+				return _deviceInfo;
+			}
+		}
+
+		internal Color AccentColor
+		{
+			get
+			{
+				if (_accentColor == null)
+					Interlocked.CompareExchange(ref _accentColor, Forms.GetAccentColor(this), null);
+				return (Color)_accentColor;
+			}
 		}
 
 		public event EventHandler ConfigurationChanged;
@@ -183,7 +238,6 @@ namespace Xamarin.Forms.Platform.Android
 			PreviousActivityDestroying.Wait();
 
 			Profile.FramePartition(nameof(SetMainPage));
-
 			SetMainPage();
 
 			Profile.FrameEnd();
@@ -210,6 +264,12 @@ namespace Xamarin.Forms.Platform.Android
 			ActivationFlags flags)
 		{
 			Profile.FrameBegin();
+
+			Profile.FramePartition("Anticipate");
+			var layout = default(ARelativeLayout);
+			_anticipator.Anticipate(() => layout = new ARelativeLayout(BaseContext));
+
+			//ToolbarResource = Resource.Layout.Toolbar;
 			_activityCreated = true;
 			if (!AllowFragmentRestore)
 			{
@@ -222,20 +282,33 @@ namespace Xamarin.Forms.Platform.Android
 			Profile.FramePartition("Xamarin.Android.OnCreate");
 			base.OnCreate(savedInstanceState);
 
-			Profile.FramePartition("SetSupportActionBar");
 			AToolbar bar;
 			if (ToolbarResource != 0)
 			{
-				bar = LayoutInflater.Inflate(ToolbarResource, null).JavaCast<AToolbar>();
+				Profile.FramePartition("Inflate ToolbarResource");
+				bar = _anticipator.Inflate(LayoutInflater, ToolbarResource).JavaCast<AToolbar>();
 				if (bar == null)
 					throw new InvalidOperationException("ToolbarResource must be set to a Android.Support.V7.Widget.Toolbar");
 			}
 			else 
 			{
+				Profile.FramePartition("Activate Toolbar");
 				bar = new AToolbar(this);
 			}
 
+			Profile.FramePartition("Set ActionBar");
 			SetSupportActionBar(bar);
+
+			if (layout == null)
+			{
+				Profile.FramePartition("Create ARelativeLayout");
+				_layout = new ARelativeLayout(BaseContext);
+			}
+			else
+			{
+				Profile.FramePartition("Anticipated ARelativeLayout");
+				_layout = layout;
+			}
 
 			Profile.FramePartition("SetContentView");
 			_layout = new ARelativeLayout(BaseContext);
@@ -247,7 +320,8 @@ namespace Xamarin.Forms.Platform.Android
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnCreate;
 
-			OnStateChanged();
+			if (_application != null)
+				OnStateChanged();
 
 			Profile.FramePartition("Forms.IsLollipopOrNewer");
 			if (Forms.IsLollipopOrNewer)
@@ -258,9 +332,6 @@ namespace Xamarin.Forms.Platform.Android
 					Profile.FramePartition("Set DrawsSysBarBkgrnds");
 					Window.AddFlags(WindowManagerFlags.DrawsSystemBarBackgrounds);
 				}
-			}
-			if (Forms.IsLollipopOrNewer)
-			{
 				// Listen for the device going into power save mode so we can handle animations being disabled
 				Profile.FramePartition("Allocate PowerSaveModeReceiver");
 				_powerSaveModeBroadcastReceiver = new PowerSaveModeBroadcastReceiver();
@@ -485,6 +556,11 @@ namespace Xamarin.Forms.Platform.Android
 			Window.SetSoftInputMode(adjust);
 		}
 
+		AView IResourceInflator.Inflate(LayoutInflater inflator, int resourceId)
+		{
+			return _anticipator.Inflate(inflator, resourceId);
+		}
+
 		internal class DefaultApplication : Application
 		{
 		}
@@ -494,9 +570,7 @@ namespace Xamarin.Forms.Platform.Android
 		public static event BackButtonPressedEventHandler BackPressed;
 
 		public static int TabLayoutResource { get; set; }
-
 		public static int ToolbarResource { get; set; }
-
 		#endregion
 	}
 }
