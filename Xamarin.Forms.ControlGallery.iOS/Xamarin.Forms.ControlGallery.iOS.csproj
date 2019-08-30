@@ -334,7 +334,6 @@
     <BundleResource Include="Resources\icon_bookmark%402x.png" />
     <BundleResource Include="Resources\xamarinstore.jpg" />
     <BundleResource Include="Resources\cardBackground%402x.png" />
-    <Content Include="Default-812h%403x.png" />
     <Content Include="sweden.gif" />
   </ItemGroup>
   <ItemGroup>
@@ -403,10 +402,6 @@
       <Visible>false</Visible>
     </ImageAsset>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\Fonts\" />
-    <Folder Include="CustomEffects\" />
-    <Folder Include="CustomRenderers\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>
