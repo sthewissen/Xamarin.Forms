@@ -141,7 +141,8 @@
     <Content Include="default.css" />
     <Content Include="FlowerBuds.jpg" />
     <Content Include="Fruits.jpg" />
-    <Content Include="ie_retro.gif" />
+    <Content Include="GifOne.gif" />
+    <Content Include="GifTwo.gif" />
     <Content Include="invalidimage.jpg" />
     <Content Include="Legumes.jpg" />
     <Content Include="local.html" />
@@ -183,7 +184,6 @@
     <Content Include="scale-200\person.png" />
     <Content Include="scale-200\star-flyout.png" />
     <Content Include="scale-200\star.png" />
-    <Content Include="sweden.gif" />
     <Content Include="test.jpg" />
     <Content Include="oasis.jpg" />
     <Content Include="oasissmall.jpg" />
