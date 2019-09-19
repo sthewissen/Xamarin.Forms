@@ -165,7 +165,7 @@
     <Compile Include="IScrollView.cs" />
     <Compile Include="ITabStop.cs" />
     <Compile Include="IPickerRenderer.cs" />
-    <Compile Include="Listeners\ListenerBase.cs" />
+    <Compile Include="ListenerBase.cs" />
     <Compile Include="PickerManager.cs" />
     <Compile Include="EntryAccessibilityDelegate.cs" />
     <Compile Include="Renderers\CircularProgress.cs" />
