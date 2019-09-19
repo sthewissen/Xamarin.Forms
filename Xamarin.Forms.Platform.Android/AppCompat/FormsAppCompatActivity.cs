@@ -46,6 +46,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		Application _application;
 
+		object _accentColor;
+		DeviceInfo _deviceInfo;
+
 		AndroidApplicationLifecycleState _currentState;
 		ARelativeLayout _layout;
 
@@ -67,10 +70,31 @@ namespace Xamarin.Forms.Platform.Android
 			_previousState = AndroidApplicationLifecycleState.Uninitialized;
 			_currentState = AndroidApplicationLifecycleState.Uninitialized;
 			PopupManager.Subscribe(this);
-
 			var anticipator = new Anticipator();
+			anticipator.AnticipateGetter(() => DeviceInfo);
+			anticipator.AnticipateGetter(() => AccentColor);
 			anticipator.AnticipateClassConstruction(typeof(Resource.Layout));
 			anticipator.AnticipateClassConstruction(typeof(Resource.Attribute));
+		}
+
+		internal DeviceInfo DeviceInfo
+		{
+			get
+			{
+				if (_deviceInfo == null)
+					Interlocked.CompareExchange(ref _deviceInfo, new Forms.AndroidDeviceInfo(this), null);
+				return _deviceInfo;
+			}
+		}
+
+		internal Color AccentColor
+		{
+			get
+			{
+				if (_accentColor == null)
+					Interlocked.CompareExchange(ref _accentColor, Forms.GetAccentColor(this), null);
+				return (Color)_accentColor;
+			}
 		}
 
 		public event EventHandler ConfigurationChanged;

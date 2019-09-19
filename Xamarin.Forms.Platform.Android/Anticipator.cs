@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -76,5 +76,11 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			Anticipate(() => RuntimeHelpers.RunClassConstructor(type.TypeHandle));
 		}
+
+		public void AnticipateGetter<T>(Func<T> getter)
+		{
+			Anticipate(() => getter());
+		}
+
 	}
 }

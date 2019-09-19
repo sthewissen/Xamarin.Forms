@@ -50,7 +50,7 @@ namespace Xamarin.Forms
 
 	public static class Forms
 	{
-
+		static object s_lock = new object();
 		const int TabletCrossover = 600;
 
 		static BuildVersionCodes? s_sdkInt;
@@ -244,10 +244,13 @@ namespace Xamarin.Forms
 				ResourceManager.Init(resourceAssembly);
 			}
 
-			Profile.FramePartition("Color.SetAccent()");
+			Profile.FramePartition("GetAccentColor");
+			var accentColor = (activity as FormsAppCompatActivity)?.AccentColor ?? GetAccentColor(activity);
+
+			Profile.FramePartition("SetAccentColor");
 			// We want this to be updated when we have a new activity (e.g. on a configuration change)
 			// This could change if the UI mode changes (e.g., if night mode is enabled)
-			Color.SetAccent(GetAccentColor(activity));
+			Color.SetAccent(accentColor);
 			_ColorButtonNormalSet = false;
 
 			if (!IsInitialized)
@@ -272,7 +275,7 @@ namespace Xamarin.Forms
 			// We want this to be updated when we have a new activity (e.g. on a configuration change)
 			// because Device.Info watches for orientation changes and we need a current activity for that
 			Profile.FramePartition("create AndroidDeviceInfo");
-			Device.Info = new AndroidDeviceInfo(activity);
+			Device.Info = (activity as FormsAppCompatActivity)?.DeviceInfo ?? new AndroidDeviceInfo(activity);
 
 			Profile.FramePartition("setFlags");
 			Device.SetFlags(s_flags);
@@ -281,7 +284,6 @@ namespace Xamarin.Forms
 			Ticker.SetDefault(null);
 
 			Profile.FramePartition("RegisterAll");
-
 			if (!IsInitialized)
 			{
 				if (maybeOptions.HasValue)
@@ -356,7 +358,9 @@ namespace Xamarin.Forms
 			FlagsSet = true;
 		}
 
-		static Color GetAccentColor(Context context)
+		internal static Color GetAccentColor(Context context)
+		{
+			lock (s_lock) 
 		{
 			Color rc;
 			using (var value = new TypedValue())
@@ -388,6 +392,7 @@ namespace Xamarin.Forms
 			}
 			return rc;
 		}
+		}
 
 		static Color GetButtonColor(Context context)
 		{
@@ -410,7 +415,7 @@ namespace Xamarin.Forms
 			return rc;
 		}
 
-		class AndroidDeviceInfo : DeviceInfo
+		internal class AndroidDeviceInfo : DeviceInfo
 		{
 			bool _disposed;
 			readonly Context _formsActivity;
@@ -422,6 +427,8 @@ namespace Xamarin.Forms
 
 			public AndroidDeviceInfo(Context formsActivity)
 			{
+				lock (s_lock) 
+				{
 				CheckOrientationChanged(formsActivity);
 
 				// This will not be an implementation of IDeviceInfoProvider when running inside the context
@@ -432,6 +439,7 @@ namespace Xamarin.Forms
 					_formsActivity = formsActivity;
 					((IDeviceInfoProvider)_formsActivity).ConfigurationChanged += ConfigurationChanged;
 				}
+			}
 			}
 
 			public override Size PixelScreenSize
