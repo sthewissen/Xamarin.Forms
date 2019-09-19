@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			renderer.View.SetCameraDistance(3600);
 
-			renderer.View.AddOnAttachStateChangeListener(AttachTracker.Instance);
+			AttachTracker.AddListener(renderer.View);
 		}
 
 		public void Dispose()
@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (_renderer != null)
 				{
 					_renderer.ElementChanged -= RendererOnElementChanged;
-					_renderer.View.RemoveOnAttachStateChangeListener(AttachTracker.Instance);
+					AttachTracker.RemoveListener(_renderer.View);
 					_renderer = null;
 					_context = null;
 				}
@@ -426,9 +426,48 @@ namespace Xamarin.Forms.Platform.Android
 			_renderer.View.Enabled = _renderer.Element.IsEnabled;
 		}
 
-		class AttachTracker : Object, AView.IOnAttachStateChangeListener
+		class AttachTracker : ListenerBase<AttachTracker>, AView.IOnAttachStateChangeListener
 		{
-			public static readonly AttachTracker Instance = new AttachTracker();
+			static AttachTracker Instance;
+
+			public static void AddListener(AView attachedView)
+			{
+				GetOrCreate(attachedView).Add(attachedView);
+			}
+
+			public static void RemoveListener(AView attachedView)
+			{
+				GetOrCreate(attachedView).Remove(attachedView);
+			}
+
+			static AttachTracker GetOrCreate(AView targetView)
+			{
+				return GetOrCreate(
+							targetView, 
+							() => new AttachTracker(), 
+							(t, v) => v.AddOnAttachStateChangeListener(t),
+							(t, v) => v.RemoveOnAttachStateChangeListener(t),
+							(t, v) => t.AddOnAttachStateChangeEvent(v),
+							(t, v) => t.RemoveOnAttachStateChangeEvent(v),
+							ref Instance);
+			}
+
+			public void AddOnAttachStateChangeEvent(AView attachedView)
+			{
+				if (attachedView is ViewGroup vg)
+					vg.ViewAttachedToWindow += OnViewGroupAttachedToWindow;
+			}
+
+			void OnViewGroupAttachedToWindow(object sender, AView.ViewAttachedToWindowEventArgs e)
+			{
+				OnViewAttachedToWindow(e.AttachedView);
+			}
+
+			public void RemoveOnAttachStateChangeEvent(AView attachedView)
+			{
+				if (attachedView is ViewGroup vg)
+					vg.ViewAttachedToWindow -= OnViewGroupAttachedToWindow;
+			}
 
 			public void OnViewAttachedToWindow(AView attachedView)
 			{

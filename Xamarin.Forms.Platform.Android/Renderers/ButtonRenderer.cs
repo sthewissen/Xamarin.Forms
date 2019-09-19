@@ -90,6 +90,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (disposing)
 			{
+				ButtonClickListener.RemoveListener(Control);
+				ButtonTouchListener.RemoveListener(Control);
 				_backgroundTracker?.Dispose();
 				_backgroundTracker = null;
 				_visualElementRenderer = null;
@@ -113,8 +115,8 @@ namespace Xamarin.Forms.Platform.Android
 				if (button == null)
 				{
 					button = CreateNativeControl();
-					button.SetOnClickListener(ButtonClickListener.Instance.Value);
-					button.SetOnTouchListener(ButtonTouchListener.Instance.Value);
+					ButtonClickListener.AddListener(button);
+					ButtonTouchListener.AddListener(button);
 					button.Tag = this;
 					SetNativeControl(button);
 
@@ -314,9 +316,31 @@ namespace Xamarin.Forms.Platform.Android
 			UpdatePadding();
 		}
 
-		class ButtonClickListener : Object, IOnClickListener
+		class ButtonClickListener : ListenerBase<ButtonClickListener>, IOnClickListener
 		{
-			public static readonly Lazy<ButtonClickListener> Instance = new Lazy<ButtonClickListener>(() => new ButtonClickListener());
+			static ButtonClickListener Instance;
+
+			public static void AddListener(AView attachedView)
+			{
+				GetOrCreate(attachedView).Add(attachedView);
+			}
+
+			public static void RemoveListener(AView attachedView)
+			{
+				GetOrCreate(attachedView).Remove(attachedView);
+			}
+
+			static ButtonClickListener GetOrCreate(AView targetView)
+			{
+				return GetOrCreate(
+							targetView,
+							() => new ButtonClickListener(),
+							(t, v) => v.SetOnClickListener(t),
+							(t, v) => v?.SetOnClickListener(null),
+							(t, v) => { },
+							(t, v) => { },
+							ref Instance);
+			}
 
 			public void OnClick(AView v)
 			{
@@ -326,9 +350,31 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		class ButtonTouchListener : Object, IOnTouchListener
+		class ButtonTouchListener : ListenerBase<ButtonTouchListener>, IOnTouchListener
 		{
-			public static readonly Lazy<ButtonTouchListener> Instance = new Lazy<ButtonTouchListener>(() => new ButtonTouchListener());
+			static ButtonTouchListener Instance;
+
+			public static void AddListener(AView attachedView)
+			{
+				GetOrCreate(attachedView).Add(attachedView);
+			}
+
+			public static void RemoveListener(AView attachedView)
+			{
+				GetOrCreate(attachedView).Remove(attachedView);
+			}
+
+			static ButtonTouchListener GetOrCreate(AView targetView)
+			{
+				return GetOrCreate(
+							targetView,
+							() => new ButtonTouchListener(),
+							(t, v) => v.SetOnTouchListener(t),
+							(t, v) => v?.SetOnTouchListener(null),
+							(t, v) => { },
+							(t, v) => { },
+							ref Instance);
+			}
 
 			public bool OnTouch(AView v, AMotionEvent e)
 			{
