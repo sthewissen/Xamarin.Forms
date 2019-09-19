@@ -458,11 +458,6 @@ namespace Xamarin.Forms.Platform.Android
 					vg.ViewAttachedToWindow += OnViewGroupAttachedToWindow;
 			}
 
-			void OnViewGroupAttachedToWindow(object sender, AView.ViewAttachedToWindowEventArgs e)
-			{
-				OnViewAttachedToWindow(e.AttachedView);
-			}
-
 			public void RemoveOnAttachStateChangeEvent(AView attachedView)
 			{
 				if (attachedView is ViewGroup vg)
@@ -471,15 +466,25 @@ namespace Xamarin.Forms.Platform.Android
 
 			public void OnViewAttachedToWindow(AView attachedView)
 			{
+				OnViewGroupAttachedToWindow(attachedView);
+			}
+
+			public void OnViewDetachedFromWindow(AView detachedView)
+			{
+			}
+
+			static void OnViewGroupAttachedToWindow(object sender, AView.ViewAttachedToWindowEventArgs e)
+			{
+				OnViewGroupAttachedToWindow(e.AttachedView);
+			}
+
+			static void OnViewGroupAttachedToWindow(AView attachedView)
+			{
 				var renderer = attachedView as IVisualElementRenderer;
 				if (renderer == null || renderer.Tracker == null)
 					return;
 
 				renderer.Tracker.HandleViewAttachedToWindow();
-			}
-
-			public void OnViewDetachedFromWindow(AView detachedView)
-			{
 			}
 		}
 	}
