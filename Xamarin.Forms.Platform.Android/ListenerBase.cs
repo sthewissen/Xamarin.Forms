@@ -14,12 +14,12 @@ using Object = Java.Lang.Object;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class ListenerBase<T> : Object
+	internal class ListenerBase<T> : Object where T : class
 	{
 		Action<T, AView> _attach;
 		Action<T, AView> _detach;
-		T _instance;
-
+		Lazy<T> _instance;
+		static object _lock = new object();
 		public static T GetOrCreate(
 			AView targetView,
 			Func<T> realCreate,
@@ -29,38 +29,53 @@ namespace Xamarin.Forms.Platform.Android
 			Action<T, AView> designerDetach,
 			ref T Instance)
 		{
-			if (Instance != null)
-				return Instance;
+			ListenerBase<T> tracer = Instance as ListenerBase<T>;
+			if (tracer?._instance != null)
+				return tracer._instance.Value;
 
-			Instance = realCreate();
-
-			if (Instance is ListenerBase<T> tracer)
+			lock (_lock)
 			{
-				if (targetView.IsDesignerContext())
-				{
-					tracer._attach = designerAttach;
-					tracer._detach = designerDetach;
-				}
-				else
-				{
-					tracer._attach = attach;
-					tracer._detach = detach;
-				}
+				if (tracer?._instance != null)
+					return tracer._instance.Value;
 
-				tracer._instance = Instance;
+				Instance = realCreate();
+				tracer = Instance as ListenerBase<T>;
+				tracer._instance = new Lazy<T>(() =>
+				{
+					if (tracer is ListenerBase<T> listenerBase)
+					{
+						if (targetView.IsDesignerContext())
+						{
+							listenerBase._attach = designerAttach;
+							listenerBase._detach = designerDetach;
+						}
+						else
+						{
+							listenerBase._attach = attach;
+							listenerBase._detach = detach;
+						}
+					}
+
+					return tracer as T;
+				});
 			}
 
-			return Instance;
+			return tracer._instance.Value;
 		}
 
 		public void Add(AView attachedView)
 		{
-			_attach(_instance, attachedView);
+			if (_attach == null)
+				throw new ArgumentNullException(nameof(_attach));
+			if (_instance == null)
+				throw new ArgumentNullException(nameof(_instance));
+
+			_attach(_instance.Value, attachedView);
 		}
 
 		public void Remove(AView attachedView)
 		{
-			_detach(_instance, attachedView);
+			_detach(_instance.Value, attachedView);
 		}
 	}
 }
