@@ -238,14 +238,18 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				if (_detailLayout != null)
 				{
-					RemoveView(_detailLayout);
+					if (!this.IsDisposed())
+						RemoveView(_detailLayout);
+
 					_detailLayout.Dispose();
 					_detailLayout = null;
 				}
 
 				if (_masterLayout != null)
 				{
-					RemoveView(_masterLayout);
+					if (!this.IsDisposed())
+						RemoveView(_masterLayout);
+
 					_masterLayout.Dispose();
 					_masterLayout = null;
 				}

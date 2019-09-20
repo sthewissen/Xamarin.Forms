@@ -332,14 +332,17 @@ namespace Xamarin.Forms.Platform.Android
 
 			static ButtonClickListener GetOrCreate(AView targetView)
 			{
-				return GetOrCreate(
+				Instance = Instance ?? GetOrCreate(
 							targetView,
 							() => new ButtonClickListener(),
 							(t, v) => v.SetOnClickListener(t),
 							(t, v) => v?.SetOnClickListener(null),
 							(t, v) => { },
 							(t, v) => { },
+							Instance,
 							ref Instance);
+
+				return Instance;
 			}
 
 			public void OnClick(AView v)
@@ -373,6 +376,7 @@ namespace Xamarin.Forms.Platform.Android
 							(t, v) => v?.SetOnTouchListener(null),
 							(t, v) => { },
 							(t, v) => { },
+							Instance,
 							ref Instance);
 			}
 

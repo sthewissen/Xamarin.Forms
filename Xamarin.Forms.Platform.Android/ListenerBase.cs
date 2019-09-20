@@ -27,40 +27,37 @@ namespace Xamarin.Forms.Platform.Android
 			Action<T, AView> detach,
 			Action<T, AView> designerAttach,
 			Action<T, AView> designerDetach,
-			ref T Instance)
+			ListenerBase<T> instance,
+			ref T refInstance)
 		{
-			ListenerBase<T> tracer = Instance as ListenerBase<T>;
-			if (tracer?._instance != null)
-				return tracer._instance.Value;
+			if (instance?._instance != null)
+				return instance._instance.Value;
 
 			lock (_lock)
 			{
-				if (tracer?._instance != null)
-					return tracer._instance.Value;
+				if (instance?._instance != null)
+					return instance._instance.Value;
 
-				Instance = realCreate();
-				tracer = Instance as ListenerBase<T>;
-				tracer._instance = new Lazy<T>(() =>
+				refInstance = realCreate();
+				instance = refInstance as ListenerBase<T>;
+				instance._instance = new Lazy<T>(() =>
 				{
-					if (tracer is ListenerBase<T> listenerBase)
+					if (targetView.IsDesignerContext())
 					{
-						if (targetView.IsDesignerContext())
-						{
-							listenerBase._attach = designerAttach;
-							listenerBase._detach = designerDetach;
-						}
-						else
-						{
-							listenerBase._attach = attach;
-							listenerBase._detach = detach;
-						}
+						instance._attach = designerAttach;
+						instance._detach = designerDetach;
+					}
+					else
+					{
+						instance._attach = attach;
+						instance._detach = detach;
 					}
 
-					return tracer as T;
+					return instance as T;
 				});
 			}
 
-			return tracer._instance.Value;
+			return instance._instance.Value;
 		}
 
 		public void Add(AView attachedView)

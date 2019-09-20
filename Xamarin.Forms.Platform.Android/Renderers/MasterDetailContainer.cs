@@ -87,7 +87,9 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (disposing)
 			{
-				RemoveAllViews();
+				if(!this.IsDisposed())
+					RemoveAllViews();
+
 				DisposeChildRenderers();
 			}
 			base.Dispose(disposing);

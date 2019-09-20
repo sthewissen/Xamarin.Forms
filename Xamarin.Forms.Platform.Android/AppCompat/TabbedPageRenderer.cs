@@ -174,7 +174,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					}
 				}
 
-				RemoveAllViews();
+				if (!this.IsDisposed())
+					RemoveAllViews();
 
 				if (_viewPager != null)
 				{

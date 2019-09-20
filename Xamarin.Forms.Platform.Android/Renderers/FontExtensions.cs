@@ -71,10 +71,9 @@ namespace Xamarin.Forms.Platform.Android
 			return ToTypeface(self.FontFamily, self.FontAttributes);
 		}
 
-
 		static Typeface ToTypeface(string fontFamily, FontAttributes fontAttributes)
 		{
-			fontFamily = fontFamily ?? String.Empty;
+			fontFamily = fontFamily ?? "";
 			return Typefaces.GetOrAdd(new Tuple<string, FontAttributes>(fontFamily, fontAttributes), CreateTypeface);
 		}
 
@@ -84,7 +83,7 @@ namespace Xamarin.Forms.Platform.Android
 			var fontFamily = key.Item1;
 			var fontAttribute = key.Item2;
 
-			if (fontFamily == null)
+			if (String.IsNullOrWhiteSpace(fontFamily))
 			{
 				var style = ToTypefaceStyle(fontAttribute);
 				result = Typeface.Create(Typeface.Default, style);

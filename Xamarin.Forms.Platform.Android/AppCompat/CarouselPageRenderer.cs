@@ -75,7 +75,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					_viewPager = null;
 				}
 
-				RemoveAllViews();
+				if (!this.IsDisposed())
+					RemoveAllViews();
 
 				_previousPage = null;
 				_fragmentManager = null;

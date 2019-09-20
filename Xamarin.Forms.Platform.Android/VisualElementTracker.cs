@@ -449,6 +449,7 @@ namespace Xamarin.Forms.Platform.Android
 							(t, v) => v.RemoveOnAttachStateChangeListener(t),
 							(t, v) => t.AddOnAttachStateChangeEvent(v),
 							(t, v) => t.RemoveOnAttachStateChangeEvent(v),
+							Instance,
 							ref Instance);
 			}
 
@@ -460,7 +461,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			public void RemoveOnAttachStateChangeEvent(AView attachedView)
 			{
-				if (attachedView is ViewGroup vg)
+				if (!attachedView.IsDisposed() && attachedView is ViewGroup vg)
 					vg.ViewAttachedToWindow -= OnViewGroupAttachedToWindow;
 			}
 

@@ -158,10 +158,13 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			if (disposing)
 			{
-				SetOnClickListener(null);
-				SetOnTouchListener(null);
-				RemoveOnAttachStateChangeListener(this);
-				OnFocusChangeListener = null;
+				if (!this.IsDisposed())
+				{
+					SetOnClickListener(null);
+					SetOnTouchListener(null);
+					RemoveOnAttachStateChangeListener(this);
+					OnFocusChangeListener = null;
+				}
 
 				if (Element != null)
 				{

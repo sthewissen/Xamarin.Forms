@@ -447,7 +447,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				if (disposing)
 				{
-					RemoveAllViews();
+					if (!this.IsDisposed())
+						RemoveAllViews();
+
 					if (_renderer != null)
 					{
 						_renderer.Dispose();
