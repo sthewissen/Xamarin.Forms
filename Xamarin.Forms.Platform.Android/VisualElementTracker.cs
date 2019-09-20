@@ -446,7 +446,11 @@ namespace Xamarin.Forms.Platform.Android
 							targetView, 
 							() => new AttachTracker(), 
 							(t, v) => v.AddOnAttachStateChangeListener(t),
-							(t, v) => v.RemoveOnAttachStateChangeListener(t),
+							(t, v) =>
+							{
+								if(v.IsAlive())
+									v.RemoveOnAttachStateChangeListener(t);
+							},
 							(t, v) => t.AddOnAttachStateChangeEvent(v),
 							(t, v) => t.RemoveOnAttachStateChangeEvent(v),
 							Instance,
@@ -461,7 +465,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			public void RemoveOnAttachStateChangeEvent(AView attachedView)
 			{
-				if (!attachedView.IsDisposed() && attachedView is ViewGroup vg)
+				if (attachedView.IsAlive() && attachedView is ViewGroup vg)
 					vg.ViewAttachedToWindow -= OnViewGroupAttachedToWindow;
 			}
 

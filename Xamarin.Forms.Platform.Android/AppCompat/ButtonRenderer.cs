@@ -79,9 +79,12 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			{
 				if (Control != null)
 				{
-					Control.SetOnClickListener(null);
-					Control.SetOnTouchListener(null);
-					Control.RemoveOnAttachStateChangeListener(this);
+					if (!Control.IsDisposed())
+					{
+						Control.SetOnClickListener(null);
+						Control.SetOnTouchListener(null);
+						Control.RemoveOnAttachStateChangeListener(this);
+					}
 					_textColorSwitcher = null;
 				}
 				_backgroundTracker?.Dispose();

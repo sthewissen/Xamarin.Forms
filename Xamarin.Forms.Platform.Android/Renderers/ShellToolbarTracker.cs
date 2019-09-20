@@ -143,8 +143,12 @@ namespace Xamarin.Forms.Platform.Android
 				_drawerToggle?.Dispose();
 				if (_searchView != null)
 				{
-					_searchView.View.RemoveFromParent();
-					_searchView.View.ViewAttachedToWindow -= OnSearchViewAttachedToWindow;
+					if (_searchView.View.IsAlive())
+					{
+						_searchView.View.RemoveFromParent();
+						_searchView.View.ViewAttachedToWindow -= OnSearchViewAttachedToWindow;
+					}
+
 					_searchView.SearchConfirmed -= OnSearchConfirmed;
 					_searchView.Dispose();
 				}

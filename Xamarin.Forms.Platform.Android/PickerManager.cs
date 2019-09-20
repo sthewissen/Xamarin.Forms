@@ -53,8 +53,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		public static void Dispose(EditText editText)
 		{
-			editText.KeyPress -= OnKeyPress;
-			editText.SetOnClickListener(null);
+			if (editText.IsAlive())
+			{
+				editText.KeyPress -= OnKeyPress;
+				editText.SetOnClickListener(null);
+			}
 		}
 
 		public static ICharSequence GetTitle(Color titleColor, string title)

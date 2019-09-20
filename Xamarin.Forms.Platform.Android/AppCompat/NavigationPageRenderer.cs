@@ -198,8 +198,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					trans.CommitAllowingStateLossEx();
 					fm.ExecutePendingTransactionsEx();
 				}
-				
-				_toolbar.RemoveView(_titleView);
+
+				if (!_toolbar.IsDisposed())
+					_toolbar.RemoveView(_titleView);
+
 				_titleView?.Dispose();
 				_titleView = null;
 

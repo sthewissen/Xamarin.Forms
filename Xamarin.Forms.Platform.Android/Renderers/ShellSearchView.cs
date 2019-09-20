@@ -132,17 +132,25 @@ namespace Xamarin.Forms.Platform.Android
 				_searchHandlerAppearanceTracker?.Dispose();
 				SearchHandler.PropertyChanged -= OnSearchHandlerPropertyChanged;
 
-				_textBlock.ItemClick -= OnTextBlockItemClicked;
-				_textBlock.RemoveTextChangedListener(this);
-				_textBlock.SetOnEditorActionListener(null);
-				_textBlock.Adapter.Dispose();
-				_textBlock.Adapter = null;
-				_textBlock.DropDownBackground.Dispose();
-				_textBlock.SetDropDownBackgroundDrawable(null);
+				if (_textBlock.IsAlive())
+				{
+					_textBlock.ItemClick -= OnTextBlockItemClicked;
+					_textBlock.RemoveTextChangedListener(this);
+					_textBlock.SetOnEditorActionListener(null);
+					_textBlock.Adapter.Dispose();
+					_textBlock.Adapter = null;
+					_textBlock.DropDownBackground.Dispose();
+					_textBlock.SetDropDownBackgroundDrawable(null);
+				}
 
-				_clearButton.Click -= OnClearButtonClicked;
-				_clearPlaceholderButton.Click -= OnClearPlaceholderButtonClicked;
-				_searchButton.Click -= OnSearchButtonClicked;
+				if(_clearButton.IsAlive())
+					_clearButton.Click -= OnClearButtonClicked;
+
+				if(_clearPlaceholderButton.IsAlive())
+					_clearPlaceholderButton.Click -= OnClearPlaceholderButtonClicked;
+
+				if(_searchButton.IsAlive())
+					_searchButton.Click -= OnSearchButtonClicked;
 
 				_textBlock.Dispose();
 				_clearButton.Dispose();

@@ -82,7 +82,15 @@ namespace Xamarin.Forms.Platform.Android
 				}
 
 				if (_renderer.View is ILayoutChanges layout)
-					layout.LayoutChange -= OnInitialLayoutChange;
+				{
+					if(layout is Java.Lang.Object jlo)
+					{
+						if(jlo.IsAlive())
+							layout.LayoutChange -= OnInitialLayoutChange;
+					}
+					else
+						layout.LayoutChange -= OnInitialLayoutChange;
+				}
 
 				if (_childViews != null)
 				{

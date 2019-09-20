@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (disposing)
 			{
-				if (_recyclerView != null)
+				if (_recyclerView != null && _recyclerView.IsAlive())
 				{
 					_recyclerView.ScrollChange -= RecyclerViewScrollChange;
 				}

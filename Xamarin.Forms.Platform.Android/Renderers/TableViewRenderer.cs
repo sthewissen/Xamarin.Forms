@@ -79,7 +79,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (disposing)
 			{
 				// Unhook the adapter from the ListView before disposing of it
-				if (Control != null)
+				if (Control.IsAlive())
 				{
 					Control.Adapter = null;
 				}

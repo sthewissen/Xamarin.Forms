@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (disposing && Element != null && Element.Children.Count > 0)
 			{
-				if (!this.IsDisposed())
+				if (this.IsAlive())
 					RemoveAllViews();
 
 				foreach (Page pageToRemove in Element.Children)

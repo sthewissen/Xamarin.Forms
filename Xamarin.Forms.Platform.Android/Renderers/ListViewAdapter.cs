@@ -429,8 +429,11 @@ namespace Xamarin.Forms.Platform.Android
 
 				MessagingCenter.Unsubscribe<ListViewAdapter>(this, Platform.CloseContextActionsSignalName);
 
-				_realListView.OnItemClickListener = null;
-				_realListView.OnItemLongClickListener = null;
+				if (_realListView.IsAlive())
+				{
+					_realListView.OnItemClickListener = null;
+					_realListView.OnItemLongClickListener = null;
+				}
 
 				var templatedItems = TemplatedItemsView.TemplatedItems;
 				templatedItems.CollectionChanged -= OnCollectionChanged;
@@ -499,6 +502,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void DisposeOfConditionalFocusLayout(ConditionalFocusLayout layout)
 		{
+			if (!layout.IsAlive())
+				return;
+
 			var renderedView = layout?.GetChildAt(0);
 
 			var element = (renderedView as INativeElementView)?.Element;

@@ -75,7 +75,8 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (Element != null)
 				{
-					Control?.StopLoading();
+					if(Control.IsAlive())
+						Control.StopLoading();
 
 					ElementController.EvalRequested -= OnEvalRequested;
 					ElementController.GoBackRequested -= OnGoBackRequested;

@@ -143,11 +143,14 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					_visualElementRenderer = null;
 				}
 
-				int count = ChildCount;
-				for (var i = 0; i < count; i++)
+				if (this.IsAlive())
 				{
-					AView child = GetChildAt(i);
-					child.Dispose();
+					int count = ChildCount;
+					for (var i = 0; i < count; i++)
+					{
+						AView child = GetChildAt(i);
+						child.Dispose();
+					}
 				}
 
 				if (Element != null)

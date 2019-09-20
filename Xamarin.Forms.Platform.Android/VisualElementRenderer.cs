@@ -274,11 +274,11 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (disposing)
 			{
-				if(!this.IsDisposed())
+				if (this.IsAlive())
+				{
 					SetOnClickListener(null);
-
-				if (!this.IsDisposed())
 					SetOnTouchListener(null);
+				}
 
 				EffectUtilities.UnregisterEffectControlProvider(this, Element);
 

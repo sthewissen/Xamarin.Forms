@@ -50,8 +50,12 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (disposing)
 			{
-				if (ChildCount > 0)
-					GetChildAt(0).Dispose();
+				if (this.IsAlive())
+				{
+					if (ChildCount > 0)
+						GetChildAt(0).Dispose();
+				}
+
 				_childView = null;
 			}
 

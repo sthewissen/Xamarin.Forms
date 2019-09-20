@@ -31,9 +31,17 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			renderer.ElementPropertyChanged -= OnElementPropertyChanged;
 			renderer.ElementChanged -= OnElementChanged;
 			if (renderer is ILayoutChanges layoutChanges)
-				layoutChanges.LayoutChange -= OnLayoutChange;
+			{
+				if(renderer is Java.Lang.Object obj)
+				{
+					if(obj.IsAlive())
+						layoutChanges.LayoutChange -= OnLayoutChange;
+				}
+				else
+					layoutChanges.LayoutChange -= OnLayoutChange;
+			}
 
-			if (renderer.View is ImageView imageView)
+			if (renderer.View is ImageView imageView && imageView.IsAlive())
 				imageView.SetImageDrawable(null);
 		}
 

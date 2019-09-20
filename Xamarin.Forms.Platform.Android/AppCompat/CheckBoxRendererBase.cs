@@ -66,8 +66,12 @@ namespace Xamarin.Forms.Platform.Android
 				_disposed = true;
 				_tracker?.Dispose();
 				_tracker = null;
-				SetOnCheckedChangeListener(null);
-				OnFocusChangeListener = null;
+
+				if (!this.IsDisposed())
+				{
+					SetOnCheckedChangeListener(null);
+					OnFocusChangeListener = null;
+				}
 
 				if (Element != null)
 				{

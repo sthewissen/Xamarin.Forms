@@ -24,7 +24,13 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			if (view.Parent == null)
 				return;
-			((ViewGroup)view.Parent).RemoveView(view);
+			if (view.IsDisposed())
+				return;
+
+			if(view.Parent is ViewGroup vg && vg.IsAlive())
+			{
+				vg.RemoveView(view);
+			}
 		}
 
 		public static void SetBackground(this AView view, Drawable drawable)

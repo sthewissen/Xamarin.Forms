@@ -158,7 +158,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			if (disposing)
 			{
-				if (!this.IsDisposed())
+				if (this.IsAlive())
 				{
 					SetOnClickListener(null);
 					SetOnTouchListener(null);

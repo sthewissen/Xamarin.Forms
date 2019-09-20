@@ -140,7 +140,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (disposing && !_disposed)
 			{
-				if (Control != null && ManageNativeControlLifetime)
+				if (Control.IsAlive() && ManageNativeControlLifetime)
 				{
 					Control.OnFocusChangeListener = null;
 				}

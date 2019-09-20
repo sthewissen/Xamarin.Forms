@@ -180,21 +180,28 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				if (_viewPager != null)
 				{
 					_viewPager.ClearOnPageChangeListeners();
-					_viewPager.Adapter.Dispose();
+
+					if(_viewPager.Adapter.IsAlive())
+						_viewPager.Adapter.Dispose();
+
 					_viewPager.Dispose();
 					_viewPager = null;
 				}
 
 				if (_tabLayout != null)
 				{
-					_tabLayout.ClearOnTabSelectedListeners();
+					if (_tabLayout.IsAlive())
+						_tabLayout.ClearOnTabSelectedListeners();
+
 					_tabLayout.Dispose();
 					_tabLayout = null;
 				}
 
 				if (_bottomNavigationView != null)
 				{
-					_bottomNavigationView.SetOnNavigationItemSelectedListener(null);
+					if (_bottomNavigationView.IsAlive())
+						_bottomNavigationView.SetOnNavigationItemSelectedListener(null);
+
 					_bottomNavigationView.Dispose();
 					_bottomNavigationView = null;
 				}

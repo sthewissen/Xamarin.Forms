@@ -87,10 +87,12 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					Element.PropertyChanged -= OnElementPropertyChanged;
 				}
-
-				SetOnClickListener(null);
-				SetOnTouchListener(null);
-				OnFocusChangeListener = null;
+				if (!this.IsDisposed())
+				{
+					SetOnClickListener(null);
+					SetOnTouchListener(null);
+					OnFocusChangeListener = null;
+				}
 
 				ImageElementManager.Dispose(this);
 

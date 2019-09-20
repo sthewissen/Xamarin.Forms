@@ -67,10 +67,13 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				if (_viewPager != null)
 				{
-					RemoveView(_viewPager);
+					if (!this.IsDisposed())
+						RemoveView(_viewPager);
 
 					_viewPager.ClearOnPageChangeListeners();
-					_viewPager.Adapter.Dispose();
+					if (!_viewPager.Adapter.IsDisposed())
+						_viewPager.Adapter.Dispose();
+
 					_viewPager.Dispose();
 					_viewPager = null;
 				}
@@ -88,7 +91,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 						IVisualElementRenderer pageRenderer = Android.Platform.GetRenderer(pageToRemove);
 						if (pageRenderer != null)
 						{
-							pageRenderer.View.RemoveFromParent();
+							if (!pageRenderer.View.IsDisposed())
+								pageRenderer.View.RemoveFromParent();
+
 							pageRenderer.Dispose();
 						}
 

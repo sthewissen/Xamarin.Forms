@@ -55,7 +55,8 @@ namespace Xamarin.Forms.Platform.Android
 				if (Element != null)
 					Element.Toggled -= HandleToggled;
 
-				Control.SetOnCheckedChangeListener(null);
+				if (Control.IsAlive())
+					Control.SetOnCheckedChangeListener(null);
 
 				_defaultTrackDrawable?.Dispose();
 				_defaultTrackDrawable = null;
