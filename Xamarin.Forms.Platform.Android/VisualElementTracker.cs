@@ -451,8 +451,6 @@ namespace Xamarin.Forms.Platform.Android
 								if(v.IsAlive())
 									v.RemoveOnAttachStateChangeListener(t);
 							},
-							(t, v) => t.AddOnAttachStateChangeEvent(v),
-							(t, v) => t.RemoveOnAttachStateChangeEvent(v),
 							Instance,
 							ref Instance);
 			}

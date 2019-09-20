@@ -25,8 +25,6 @@ namespace Xamarin.Forms.Platform.Android
 			Func<T> realCreate,
 			Action<T, AView> attach,
 			Action<T, AView> detach,
-			Action<T, AView> designerAttach,
-			Action<T, AView> designerDetach,
 			ListenerBase<T> instance,
 			ref T refInstance)
 		{
@@ -42,10 +40,11 @@ namespace Xamarin.Forms.Platform.Android
 				instance = refInstance as ListenerBase<T>;
 				instance._instance = new Lazy<T>(() =>
 				{
+
 					if (targetView.IsDesignerContext())
 					{
-						instance._attach = designerAttach;
-						instance._detach = designerDetach;
+						instance._attach = (_, __) =>  { };
+						instance._detach = (_, __) => { };
 					}
 					else
 					{

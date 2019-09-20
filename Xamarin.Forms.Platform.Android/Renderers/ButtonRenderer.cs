@@ -337,8 +337,6 @@ namespace Xamarin.Forms.Platform.Android
 							() => new ButtonClickListener(),
 							(t, v) => v.SetOnClickListener(t),
 							(t, v) => v?.SetOnClickListener(null),
-							(t, v) => { },
-							(t, v) => { },
 							Instance,
 							ref Instance);
 
@@ -374,8 +372,6 @@ namespace Xamarin.Forms.Platform.Android
 							() => new ButtonTouchListener(),
 							(t, v) => v.SetOnTouchListener(t),
 							(t, v) => v?.SetOnTouchListener(null),
-							(t, v) => { },
-							(t, v) => { },
 							Instance,
 							ref Instance);
 			}

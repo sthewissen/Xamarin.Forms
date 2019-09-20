@@ -140,9 +140,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal static void SetDesignerContext(global::Android.Views.View view)
 		{
-			if (!view.IsInEditMode && view.Context.IsDesignerContext())
-				throw new Exception($"Why? IsInEditMode:{view.IsInEditMode} {view.Context}: {view.Context.IsDesignerContext()}");
-
 			_isDesignerContext = view.IsInEditMode;
 		}
 
