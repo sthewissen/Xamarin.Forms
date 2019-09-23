@@ -278,6 +278,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (GetAdapter() != _emptyViewAdapter)
 				SwapAdapter(ItemsViewAdapter, true);
+
+			_oldItemViewAdapter = null;
 		}
 
 		protected virtual void SetUpNewElement(TItemsView newElement)
