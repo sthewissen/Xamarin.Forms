@@ -20,6 +20,7 @@ namespace Xamarin.Forms.Platform.Android
 		readonly EffectControlProvider _effectControlProvider;
 
 		protected TAdapter ItemsViewAdapter;
+		TAdapter _oldItemViewAdapter;
 
 		int? _defaultLabelFor;
 		bool _disposed;
@@ -271,14 +272,12 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateAdapter()
 		{
-			var oldItemViewAdapter = ItemsViewAdapter;
+			_oldItemViewAdapter = ItemsViewAdapter;
 
 			ItemsViewAdapter = CreateAdapter();
 
 			if (GetAdapter() != _emptyViewAdapter)
 				SwapAdapter(ItemsViewAdapter, true);
-
-			oldItemViewAdapter?.Dispose();
 		}
 
 		protected virtual void SetUpNewElement(TItemsView newElement)
@@ -380,6 +379,12 @@ namespace Xamarin.Forms.Platform.Android
 				_recyclerViewScrollListener.Dispose();
 				ClearOnScrollListeners();
 				_recyclerViewScrollListener = null;
+			}
+
+			if (_oldItemViewAdapter != null)
+			{
+				_oldItemViewAdapter.Dispose();
+				_oldItemViewAdapter = null;
 			}
 
 			if (ItemsViewAdapter != null)
