@@ -1,16 +1,9 @@
-﻿using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.CompilerServices;
+﻿using System.ComponentModel;
 using System.Threading.Tasks;
-using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Xamarin.Forms.Internals;
-using Xamarin.Forms.Platform.UAP;
 using UwpScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;
 using UWPApp = Windows.UI.Xaml.Application;
 using UWPDataTemplate = Windows.UI.Xaml.DataTemplate;
@@ -20,8 +13,6 @@ namespace Xamarin.Forms.Platform.UWP
 {
 	public abstract class ItemsViewRenderer : ViewRenderer<ItemsView, ListViewBase>
 	{
-		CollectionViewSource _collectionViewSource;
-
 		protected ListViewBase ListViewBase { get; private set; }
 		UwpScrollBarVisibility? _defaultHorizontalScrollVisibility;
 		UwpScrollBarVisibility? _defaultVerticalScrollVisibility;
@@ -33,6 +24,7 @@ namespace Xamarin.Forms.Platform.UWP
 		View _formsEmptyView;
 
 		protected ItemsControl ItemsControl { get; private set; }
+		protected CollectionViewSource CollectionViewSource { get; set; }
 
 		protected override void OnElementChanged(ElementChangedEventArgs<ItemsView> args)
 		{
@@ -84,20 +76,20 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (itemsSource == null)
 			{
-				if (_collectionViewSource?.Source is INotifyCollectionChanged incc)
+				if (CollectionViewSource?.Source is INotifyCollectionChanged incc)
 				{
 					incc.CollectionChanged -= ItemsChanged;
 				}
 
-				_collectionViewSource = null;
+				CollectionViewSource = null;
 				return;
 			}
 
 			var itemTemplate = Element.ItemTemplate;
 
-			if (_collectionViewSource != null)
+			if (CollectionViewSource != null)
 			{
-				if (_collectionViewSource.Source is ObservableItemTemplateCollection observableItemTemplateCollection)
+				if (CollectionViewSource.Source is ObservableItemTemplateCollection observableItemTemplateCollection)
 				{
 					observableItemTemplateCollection.CleanUp();
 				}
@@ -105,27 +97,27 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (itemTemplate != null)
 			{
-				_collectionViewSource = new CollectionViewSource
+				CollectionViewSource = new CollectionViewSource
 				{
 					Source = TemplatedItemSourceFactory.Create(itemsSource, itemTemplate, Element),
 					IsSourceGrouped = false
 				};
 
-				if (_collectionViewSource?.Source is INotifyCollectionChanged incc)
+				if (CollectionViewSource?.Source is INotifyCollectionChanged incc)
 				{
 					incc.CollectionChanged += ItemsChanged;
 				}
 			}
 			else
 			{
-				_collectionViewSource = new CollectionViewSource
+				CollectionViewSource = new CollectionViewSource
 				{
 					Source = itemsSource,
 					IsSourceGrouped = false
 				};
 			}
 			
-			ListViewBase.ItemsSource = _collectionViewSource.View;
+			ListViewBase.ItemsSource = CollectionViewSource.View;
 
 			UpdateEmptyViewVisibility();
 		}
@@ -267,16 +259,16 @@ namespace Xamarin.Forms.Platform.UWP
 			await ScrollTo(args);
 		}
 
-		object FindBoundItem(ScrollToRequestEventArgs args)
+		internal object FindBoundItem(ScrollToRequestEventArgs args)
 		{
 			if (args.Mode == ScrollToMode.Position)
 			{
-				if (args.Index >= _collectionViewSource.View.Count)
+				if (args.Index >= CollectionViewSource.View.Count)
 				{
 					return null;
 				}
 
-				return _collectionViewSource.View[args.Index];
+				return CollectionViewSource.View[args.Index];
 			}
 
 			if (Element.ItemTemplate == null)
@@ -284,13 +276,13 @@ namespace Xamarin.Forms.Platform.UWP
 				return args.Item;
 			}
 
-			for (int n = 0; n < _collectionViewSource.View.Count; n++)
+			for (int n = 0; n < CollectionViewSource.View.Count; n++)
 			{
-				if (_collectionViewSource.View[n] is ItemTemplateContext pair)
+				if (CollectionViewSource.View[n] is ItemTemplateContext pair)
 				{
 					if (pair.Item == args.Item)
 					{
-						return _collectionViewSource.View[n];
+						return CollectionViewSource.View[n];
 					}
 				}
 			}
@@ -354,12 +346,12 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (_emptyView != null && ListViewBase is IEmptyView emptyView)
 			{
-				emptyView.EmptyViewVisibility = (_collectionViewSource?.View?.Count ?? 0) == 0
-					? Visibility.Visible
-					: Visibility.Collapsed;
-
-				if (emptyView.EmptyViewVisibility == Visibility.Visible)
+				if (CollectionViewSource != null && CollectionViewSource.View != null && CollectionViewSource.View.Count > 0)
+					emptyView.EmptyViewVisibility = Visibility.Collapsed;
+				else
 				{
+					emptyView.EmptyViewVisibility = Visibility.Visible;
+
 					if (ActualWidth >= 0 && ActualHeight >= 0)
 					{
 						_formsEmptyView?.Layout(new Rectangle(0, 0, ActualWidth, ActualHeight));

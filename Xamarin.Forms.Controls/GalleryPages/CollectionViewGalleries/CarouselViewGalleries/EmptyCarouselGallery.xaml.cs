@@ -59,7 +59,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 
 		void Clear()
 		{
-			Items.Clear();
+			Items?.Clear();
 		}
 	}
 }
