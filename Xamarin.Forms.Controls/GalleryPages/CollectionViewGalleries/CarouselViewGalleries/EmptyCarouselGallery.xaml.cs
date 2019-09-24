@@ -20,6 +20,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 	public class EmptyCarouselGalleryViewModel : BindableObject
 	{
 		ObservableCollection<CarouselData> _items;
+
+		public EmptyCarouselGalleryViewModel()
+		{
+			Items = new ObservableCollection<CarouselData>();
+		}
   
 		public ObservableCollection<CarouselData> Items
 		{
@@ -38,18 +43,15 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 		void LoadItems()
 		{
 			var random = new Random();
-			var items = new List<CarouselData>();
 
 			for (int n = 0; n < 5; n++)
 			{
-				items.Add(new CarouselData
+				Items.Add(new CarouselData
 				{
 					Color = Color.FromRgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255)),
 					Name = $"{n + 1}"
 				});
 			}
-
-			Items = new ObservableCollection<CarouselData>(items);
 		}
 
 		void Add()
