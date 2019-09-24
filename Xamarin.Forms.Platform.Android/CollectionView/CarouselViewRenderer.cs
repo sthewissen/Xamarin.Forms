@@ -45,6 +45,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateIsSwipeEnabled();
 			UpdateInitialPosition();
 			UpdateItemSpacing();
+			UpdateEmptyView();
 		}
 
 		protected override void UpdateItemsSource()
@@ -62,6 +63,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateIsBounceEnabled();
 			else if (changedProperty.Is(LinearItemsLayout.ItemSpacingProperty))
 				UpdateItemSpacing();
+			else if (changedProperty.IsOneOf(ItemsView.EmptyViewProperty, ItemsView.EmptyViewTemplateProperty))
+				UpdateEmptyView();
 		}
 
 		public override bool OnInterceptTouchEvent(MotionEvent ev)

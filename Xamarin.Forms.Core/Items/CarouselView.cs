@@ -226,7 +226,10 @@ namespace Xamarin.Forms
 			if (!(carouselView?.ItemsSource is IList itemSource))
 				return null;
 
-			return itemSource[index];
+			if (index >= 0 && index < itemSource.Count)
+				return itemSource[index];
+
+			return null;
 		}
 
 		static int GetPositionForItem(CarouselView carouselView, object item)
