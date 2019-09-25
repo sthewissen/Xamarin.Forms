@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 		{
 			Items = new ObservableCollection<CarouselData>();
 		}
-  
+
 		public ObservableCollection<CarouselData> Items
 		{
 			get { return _items; }
@@ -44,13 +44,31 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 		{
 			var random = new Random();
 
-			for (int n = 0; n < 5; n++)
+			if (Device.RuntimePlatform == Device.iOS)
 			{
-				Items.Add(new CarouselData
+				var items = new List<CarouselData>();
+
+				for (int n = 0; n < 5; n++)
 				{
-					Color = Color.FromRgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255)),
-					Name = $"{n + 1}"
-				});
+					items.Add(new CarouselData
+					{
+						Color = Color.FromRgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255)),
+						Name = $"{n + 1}"
+					});
+				}
+
+				Items = new ObservableCollection<CarouselData>(items);
+			}
+			else
+			{
+				for (int n = 0; n < 5; n++)
+				{
+					Items.Add(new CarouselData
+					{
+						Color = Color.FromRgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255)),
+						Name = $"{n + 1}"
+					});
+				}
 			}
 		}
 
