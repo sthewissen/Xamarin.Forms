@@ -140,9 +140,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (!_sectionsInitialized && !_grouped && count > 0)
 			{
-				//	// Okay, we're going from completely empty to more than 0 items; this means we don't even
-				//	// have a section 0 yet. Inserting a section 0 manually results in an unexplained crash, so instead
-				//	// we'll just reload the data so the UICollectionView can get its internal state sorted out.
+				// Okay, we're going from completely empty to more than 0 items; this means we don't even
+				// have a section 0 yet. Inserting a section 0 manually results in an unexplained crash, so instead
+				// we'll just reload the data so the UICollectionView can get its internal state sorted out.
 				_collectionView.ReloadData();
 
 				_numberOfItemsInSection = _itemsSource.Count;
