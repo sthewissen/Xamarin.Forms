@@ -95,11 +95,18 @@ namespace Xamarin.Forms.Controls.Issues
 	}
 
 	[Preserve(AllMembers = true)]
+	public class Issue7678IosModel
+	{
+		public Color Color { get; set; }
+		public string Name { get; set; }
+	}
+
+	[Preserve(AllMembers = true)]
 	public class Issue7678IosViewModel : BindableObject
 	{
-		ObservableCollection<CarouselData> _items;
+		ObservableCollection<Issue7678IosModel> _items;
 
-		public ObservableCollection<CarouselData> Items
+		public ObservableCollection<Issue7678IosModel> Items
 		{
 			get { return _items; }
 			set
@@ -111,7 +118,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public async Task LoadItemsAsync()
 		{
-			Items = new ObservableCollection<CarouselData>();
+			Items = new ObservableCollection<Issue7678IosModel>();
 
 			await Task.Delay(500);
 
@@ -119,7 +126,7 @@ namespace Xamarin.Forms.Controls.Issues
 
    			for (int n = 0; n < 5; n++)
 			{
-				Items.Add(new CarouselData
+				Items.Add(new Issue7678IosModel
 				{
 					Color = Color.FromRgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255)),
 					Name = $"{n + 1}"
