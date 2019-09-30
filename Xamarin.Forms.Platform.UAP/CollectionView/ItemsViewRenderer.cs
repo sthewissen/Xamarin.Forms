@@ -81,12 +81,12 @@ namespace Xamarin.Forms.Platform.UWP
 					incc.CollectionChanged -= ItemsChanged;
 				}
 
-				if (_collectionViewSource != null)
+				if (CollectionViewSource != null)
 				{
-					_collectionViewSource.Source = null;
+					CollectionViewSource.Source = null;
 				}
 
-				_collectionViewSource = null;
+				CollectionViewSource = null;
 				ListViewBase.ItemsSource = null;
 				return;
 			}
@@ -123,7 +123,7 @@ namespace Xamarin.Forms.Platform.UWP
 				};
 			}
 
-			ListViewBase.ItemsSource = _collectionViewSource.View;
+			ListViewBase.ItemsSource = CollectionViewSource?.View;
 
 			UpdateEmptyViewVisibility();
 		}
@@ -201,9 +201,9 @@ namespace Xamarin.Forms.Platform.UWP
 				ListViewBase.ItemsSource = null;
 			}
 
-			if (_collectionViewSource != null)
+			if (CollectionViewSource != null)
 			{
-				_collectionViewSource.Source = null;
+				CollectionViewSource.Source = null;
 			}
 
 		}
