@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Platform.iOS
 			base.SetUpNewElement(newElement);
 			UpdateIsSwipeEnabled();
 			UpdateIsBounceEnabled();
-			CarouselViewController.UpdateEmptyView();
+			CarouselViewController?.UpdateEmptyView();
 		}
 
 		protected override void TearDownOldElement(ItemsView oldElement)
