@@ -275,7 +275,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateAdapter()
 		{
-			var oldItemsViewAdapter = ItemsViewAdapter;
+			var oldItemViewAdapter = ItemsViewAdapter;
 
 			ItemsViewAdapter = CreateAdapter();
 
@@ -285,8 +285,8 @@ namespace Xamarin.Forms.Platform.Android
 				SwapAdapter(ItemsViewAdapter, true);
 			}
 
-			oldItemsViewAdapter = null;
-  		}
+			oldItemViewAdapter = null;
+		}
 
 		protected virtual void SetUpNewElement(TItemsView newElement)
 		{

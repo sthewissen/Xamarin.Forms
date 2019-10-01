@@ -165,17 +165,17 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateAdapter()
 		{
-			var oldItemsViewAdapter = ItemsViewAdapter;
-
 			// By default the CollectionViewAdapter creates the items at whatever size the template calls for
 			// But for the Carousel, we want it to create the items to fit the width/height of the viewport
 			// So we give it an alternate delegate for creating the views
+			var oldItemViewAdapter = ItemsViewAdapter;
+
 			ItemsViewAdapter = new ItemsViewAdapter<ItemsView, IItemsViewSource>(ItemsView,
 				(view, context) => new SizedItemContentView(Context, GetItemWidth, GetItemHeight));
 
 			SwapAdapter(ItemsViewAdapter, false);
 
-			oldItemsViewAdapter = null;
+			oldItemViewAdapter = null;
 		}
 
 		void UpdateInitialPosition()
