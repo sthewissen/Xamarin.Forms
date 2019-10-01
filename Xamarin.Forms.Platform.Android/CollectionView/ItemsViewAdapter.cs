@@ -113,8 +113,8 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (disposing)
 				{
-					ItemsSource?.Dispose();
-					ItemsView.PropertyChanged -= ItemsViewPropertyChanged;
+					//ItemsSource?.Dispose();
+					//ItemsView.PropertyChanged -= ItemsViewPropertyChanged;
 				}
 
 				_disposed = true;
