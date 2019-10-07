@@ -1030,6 +1030,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue7582.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7563.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue6127.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue7283.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue5395.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7249.cs" />
   </ItemGroup>
   <ItemGroup>
