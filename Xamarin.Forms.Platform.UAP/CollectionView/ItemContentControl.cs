@@ -11,7 +11,6 @@ namespace Xamarin.Forms.Platform.UWP
 
 		public ItemContentControl()
 		{
-			CollectionView.VerifyCollectionViewFlagEnabled(nameof(ItemContentControl));
 			DefaultStyleKey = typeof(ItemContentControl);
 		}
 

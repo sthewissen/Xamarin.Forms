@@ -11,11 +11,6 @@ namespace Xamarin.Forms.Platform.iOS
 		bool? _defaultHorizontalScrollVisibility;
 		bool? _defaultVerticalScrollVisibility;
 
-		public ItemsViewRenderer()
-		{
-			CollectionView.VerifyCollectionViewFlagEnabled(nameof(ItemsViewRenderer));
-		}
-
 		public override UIViewController ViewController => ItemsViewController;
 
 		protected ItemsViewController ItemsViewController { get; private set; }
