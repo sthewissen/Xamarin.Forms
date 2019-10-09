@@ -67,6 +67,7 @@ namespace Xamarin.Forms.Platform.iOS
 			};
 
 			ItemsViewController.ItemsView.SendScrolled(itemsViewScrolledEventArgs);
+			CarouselViewController?.UpdateIsScrolling(true);
 
 			_previousHorizontalOffset = (float)contentOffsetX;
 			_previousVerticalOffset = (float)contentOffsetY;
@@ -169,6 +170,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void ScrollAnimationEnded(UIScrollView scrollView)
 		{
 			GroupableItemsViewController?.HandleScrollAnimationEnded();
+			CarouselViewController?.UpdateIsScrolling(false);
 		}
 	}
 }
