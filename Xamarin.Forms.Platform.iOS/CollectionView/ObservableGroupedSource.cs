@@ -4,19 +4,22 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using Foundation;
 using UIKit;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.iOS
 {
 	internal class ObservableGroupedSource : IItemsViewSource
 	{
 		readonly UICollectionView _collectionView;
+		UICollectionViewController _collectionViewController;
 		readonly IList _groupSource;
 		bool _disposed;
 		List<ObservableItemsSource> _groups = new List<ObservableItemsSource>();
 
-		public ObservableGroupedSource(IEnumerable groupSource, UICollectionView collectionView)
+		public ObservableGroupedSource(IEnumerable groupSource, UICollectionViewController collectionViewController)
 		{
-			_collectionView = collectionView;
+			_collectionViewController = collectionViewController;
+			_collectionView = _collectionViewController.CollectionView;
 			_groupSource = groupSource as IList ?? new ListSource(groupSource);
 
 			if (_groupSource is INotifyCollectionChanged incc)
@@ -86,6 +89,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public int ItemCountInGroup(nint group)
 		{
+			if (_groupSource.Count == 0)
+			{
+				return 0;
+			}
+
 			return ((IList)_groupSource[(int)group]).Count;
 		}
 
@@ -130,7 +138,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (_groupSource[n] is INotifyCollectionChanged incc && _groupSource[n] is IList list)
 				{
-					_groups.Add(new ObservableItemsSource(list, _collectionView, n));
+					_groups.Add(new ObservableItemsSource(list, _collectionViewController, n));
 				}
 			}
 		}
@@ -171,6 +179,13 @@ namespace Xamarin.Forms.Platform.iOS
 			return NSIndexSet.FromNSRange(new NSRange(startIndex, count));
 		}
 
+		bool NotLoadedYet()
+		{
+			// If the UICollectionView hasn't actually been loaded, then calling InsertSections or DeleteSections is 
+			// going to crash or get in an unusable state; instead, ReloadData should be used
+			return !_collectionViewController.IsViewLoaded || _collectionViewController.View.Window == null;
+		}
+
 		void Add(NotifyCollectionChangedEventArgs args)
 		{
 			var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : _groupSource.IndexOf(args.NewItems[0]);
@@ -179,6 +194,12 @@ namespace Xamarin.Forms.Platform.iOS
 			// Adding a group will change the section index for all subsequent groups, so the easiest thing to do
 			// is to reset all the group tracking to get it up-to-date
 			ResetGroupTracking();
+
+			if (NotLoadedYet())
+			{
+				_collectionView.ReloadData();
+				return;
+			}
 
 			_collectionView.InsertSections(CreateIndexSetFrom(startIndex, count));
 		}
@@ -202,7 +223,14 @@ namespace Xamarin.Forms.Platform.iOS
 			// is to reset all the group tracking to get it up-to-date
 			ResetGroupTracking();
 
-			_collectionView.DeleteSections(CreateIndexSetFrom(startIndex, count));
+			if (NotLoadedYet())
+			{
+				_collectionView.ReloadData();
+			}
+			else
+			{
+				_collectionView.DeleteSections(CreateIndexSetFrom(startIndex, count));
+			}
 		}
 
 		void Replace(NotifyCollectionChangedEventArgs args)
